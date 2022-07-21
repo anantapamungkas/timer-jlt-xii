@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -9,14 +12,40 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
-  final StopWatchTimer _stopwatchTimer = StopWatchTimer();
-  final _isHour = false;
+  //! stop_watch_timer method - defining timer object
+  // final StopWatchTimer _stopwatchTimer = StopWatchTimer();
+  // final _isHour = false;
+
+  //* Adding new stopwatch method
+  late Stopwatch stopwatch;
+  late Timer t;
+
+  //* Timer value
+  String returnFormatedText() {
+    var milli = stopwatch.elapsed.inMilliseconds;
+    String milliseconds = ((milli % 1000) ~/ 10).toString().padLeft(2, '0');
+    String seconds = (milli ~/ 1000).toString().padLeft(2, '0');
+    String minutes = ((milli ~/ 1000) ~/ 60).toString().padLeft(2, '0');
+
+    return '$minutes:$seconds:$milliseconds';
+  }
 
   @override
-  void dispose(){
-    super.dispose();
-    _stopwatchTimer.dispose();
+  void initState(){
+    super.initState();
+    stopwatch = Stopwatch();
+
+    t = Timer.periodic(Duration(milliseconds: 30), (timer) {
+      setState(() {});
+    });
   }
+
+  //! stop_watch_timer method - disposing
+  // @override
+  // void dispose(){
+  //   super.dispose();
+  //   _stopwatchTimer.dispose();
+  // }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,22 +75,31 @@ class _TimerPageState extends State<TimerPage> {
       //   borderRadius: BorderRadius.circular(10),
       // ),
 
-      child: StreamBuilder<int>(
-          stream: _stopwatchTimer.rawTime,
-          initialData: _stopwatchTimer.rawTime.value,
-          builder: (context, snapshot) {
-            final value = snapshot.data;
-            final displayTime = StopWatchTimer.getDisplayTime(value!, hours: _isHour);
-
-            return Text(
-              displayTime,
-              style: TextStyle(fontFamily: 'Fira Sans', fontSize: 120, fontWeight: FontWeight.normal, color: Colors.black),
-            );
-          },
+      child: Text(
+        returnFormatedText(), 
+        style: TextStyle(
+          fontFamily: 'Fira Sans', fontSize: 150, fontFeatures: [FontFeature.tabularFigures(),],
+        ),
       ),
+
+      //! stop_watch_timer method - Stream builder
+      // child: StreamBuilder<int>(
+      //     stream: _stopwatchTimer.rawTime,
+      //     initialData: _stopwatchTimer.rawTime.value,
+      //     builder: (context, snapshot) {
+      //       final value = snapshot.data;
+      //       final displayTime = StopWatchTimer.getDisplayTime(value!, hours: _isHour);
+
+      //       return Text(
+      //         displayTime,
+      //         style: TextStyle(fontFamily: 'Fira Sans', fontSize: 120, fontWeight: FontWeight.normal, color: Colors.black),
+      //       );
+      //     },
+      // ),
     );
   }
 
+  //* Button widget for start, pause, and reset
   Widget buildButton(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +112,10 @@ class _TimerPageState extends State<TimerPage> {
             primary: Color.fromARGB(255, 0, 0, 0),
           ),
           onPressed: () {
-            _stopwatchTimer.onExecute.add(StopWatchExecute.start);
+            stopwatch.start();
+
+            //! stop_watch_timer method - Starting timer
+            // _stopwatchTimer.onExecute.add(StopWatchExecute.start);
           },
           ),
 
@@ -88,7 +129,12 @@ class _TimerPageState extends State<TimerPage> {
           style: ElevatedButton.styleFrom(
             primary: Color.fromARGB(255, 0, 0, 0),
           ),
-          onPressed: () {_stopwatchTimer.onExecute.add(StopWatchExecute.stop);},
+          onPressed: () {
+            stopwatch.stop();
+
+            //! stop_watch_timer method - Stoping timer
+            // _stopwatchTimer.onExecute.add(StopWatchExecute.stop);
+          },
           ),
 
         SizedBox(
@@ -101,7 +147,12 @@ class _TimerPageState extends State<TimerPage> {
           style: ElevatedButton.styleFrom(
             primary: Color.fromARGB(255, 0, 0, 0),
           ),
-          onPressed: () {_stopwatchTimer.onExecute.add(StopWatchExecute.reset);},
+          onPressed: () {
+            stopwatch.reset();
+
+            //! stop_watch_timer method - Reseting timer
+            // _stopwatchTimer.onExecute.add(StopWatchExecute.reset);
+          },
           ),
       ],
     );
